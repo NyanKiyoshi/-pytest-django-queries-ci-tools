@@ -33,10 +33,10 @@ base_ref_hash=$($HERE/tools/queries-get-gh-base-ref -u "${user}" -n "${repo}" -r
     exit 1
 }
 
-head_results_path="${mktemp}"
-curl -X GET "${DIFF_RESULTS_BASE_URL}/${base_ref_hash}" -Lo "${head_results_path}" || {
+head_results_path="/tmp/base-results.json"
+curl -X GET "${DIFF_RESULTS_BASE_URL}/${base_ref_hash}" -L -o "${head_results_path}" || {
     echo "[Warning] Did not find a HEAD base results for ${base_ref_hash}" >&2
-    echo '{}' > ${head_results_path}
+    cp -v "${QUERIES_RESULTS_PATH}" "${head_results_path}"
 }
 
 django-queries diff "${head_results_path}" "${QUERIES_RESULTS_PATH}"
