@@ -13,9 +13,9 @@ function ensureenv() {
     }
 }
 
+ensureenv TRAVIS_COMMIT_RANGE
 ensureenv TRAVIS_REPO_SLUG
 ensureenv TRAVIS_BRANCH
-ensureenv GITHUB_GQL_TOKEN
 ensureenv DIFF_RESULTS_BASE_URL
 ensureenv QUERIES_RESULTS_PATH
 
@@ -24,16 +24,13 @@ ensureenv QUERIES_RESULTS_PATH
     exit 1
 }
 
-user=`echo ${TRAVIS_REPO_SLUG} | cut -d/ -f1`
-repo=`echo ${TRAVIS_REPO_SLUG} | cut -d/ -f2`
-ref_name=${TRAVIS_BRANCH}
+user=`echo ${TRAVIS_PULL_REQUEST_SLUG} | cut -d/ -f1`
+repo=`echo ${TRAVIS_PULL_REQUEST_SLUG} | cut -d/ -f2`
+ref_name=$(echo ${TRAVIS_PULL_REQUEST_BRANCH} | sed -E 's/\.\.\..+//')
 
-base_ref_hash=$($HERE/tools/queries-get-gh-base-ref -u "${user}" -n "${repo}" -r "${ref_name}") || {
-    echo "Failed to get the base HEAD commit... ${base_ref_hash}" >&2
-    exit 1
-}
-
+base_ref_hash=$(echo $TRAVIS_COMMIT_RANGE | cut -d... -f1)
 head_results_path="/tmp/base-results.json"
+
 curl --fail -X GET "${DIFF_RESULTS_BASE_URL}/${base_ref_hash}" -L -o "${head_results_path}" || {
     echo "[Warning] Did not find a HEAD base results for ${base_ref_hash}" >&2
     cp -v "${QUERIES_RESULTS_PATH}" "${head_results_path}"
