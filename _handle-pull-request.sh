@@ -29,12 +29,12 @@ repo=`echo ${TRAVIS_REPO_SLUG} | cut -d/ -f2`
 ref_name=${TRAVIS_BRANCH}
 
 base_ref_hash=$($HERE/tools/queries-get-gh-base-ref -u "${user}" -n "${repo}" -r "${ref_name}") || {
-    echo "Failed to get the base HEAD commit..." >&2
+    echo "Failed to get the base HEAD commit... ${base_ref_hash}" >&2
     exit 1
 }
 
 head_results_path="/tmp/base-results.json"
-curl -X GET "${DIFF_RESULTS_BASE_URL}/${base_ref_hash}" -L -o "${head_results_path}" || {
+curl --fail -X GET "${DIFF_RESULTS_BASE_URL}/${base_ref_hash}" -L -o "${head_results_path}" || {
     echo "[Warning] Did not find a HEAD base results for ${base_ref_hash}" >&2
     cp -v "${QUERIES_RESULTS_PATH}" "${head_results_path}"
 }
