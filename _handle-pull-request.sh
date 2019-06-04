@@ -3,15 +3,7 @@
 HERE=`readlink -f "$(dirname $0)"`
 has_error=0
 
-function ensureenv() {
-    local key=$1
-    local value=${!key}
-
-    [[ -z "${value}" ]] && {
-        echo "Missing environment variable: '${key}'" >&2
-        has_error=1
-    }
-}
+. ${HERE}/_utils.sh
 
 ensureenv TRAVIS_PULL_REQUEST_SHA
 ensureenv TRAVIS_COMMIT_RANGE
