@@ -37,6 +37,8 @@ django-queries diff "${head_results_path}" "${QUERIES_RESULTS_PATH}" > /tmp/diff
     exit 1
 }
 
+echo Uploading...
+
 ${HERE}/tools/queries-diff --rev ${TRAVIS_PULL_REQUEST_SHA} <<EOF
 $([[ ${missing_head} -eq 1 ]] && echo "Missing head report (${base_ref_hash}). The results couldn't be compared.")
 
