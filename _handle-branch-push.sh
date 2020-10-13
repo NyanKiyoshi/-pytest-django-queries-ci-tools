@@ -3,12 +3,12 @@
 HERE=`readlink -f "$(dirname $0)"`
 has_error=0
 
-. ${HERE}/_utils.sh
+. "${HERE}/_utils.sh"
 
-COMMIT_HASH=${COMMIT_HASH:-${CIRCLE_SHA1:-${TRAVIS_COMMIT}}}
+ensureenv JOB_COMMIT_SHA
 
-[[ -z "${COMMIT_HASH}" ]] && {
-    echo 'Did not find a commit hash. Please set $COMMIT_HASH' >&2
+[[ -z "${JOB_COMMIT_SHA}" ]] && {
+    echo 'Did not find a commit hash. Please set $JOB_COMMIT_SHA' >&2
     exit 1
 }
 
@@ -24,4 +24,4 @@ ensureenv SECRET_UPLOAD_KEY
     exit 1
 }
 
-cat "${QUERIES_RESULTS_PATH}" | ${HERE}/tools/queries-upload --rev ${COMMIT_HASH}
+cat "${QUERIES_RESULTS_PATH}" | ${HERE}/tools/queries-upload --rev "${JOB_COMMIT_SHA}"

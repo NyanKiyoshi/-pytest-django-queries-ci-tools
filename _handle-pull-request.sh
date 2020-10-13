@@ -3,12 +3,10 @@
 HERE=`readlink -f "$(dirname $0)"`
 has_error=0
 
-. ${HERE}/_utils.sh
+. "${HERE}/_utils.sh"
 
-ensureenv TRAVIS_PULL_REQUEST_SHA
-ensureenv TRAVIS_COMMIT_RANGE
-ensureenv TRAVIS_REPO_SLUG
-ensureenv TRAVIS_BRANCH
+ensureenv JOB_COMMIT_SHA
+ensureenv JOB_PR_BASE_SHA
 ensureenv DIFF_RESULTS_BASE_URL
 ensureenv QUERIES_RESULTS_PATH
 ensureenv DIFF_ENDPOINT
@@ -18,11 +16,7 @@ ensureenv DIFF_ENDPOINT
     exit 1
 }
 
-user=`echo ${TRAVIS_PULL_REQUEST_SLUG} | cut -d/ -f1`
-repo=`echo ${TRAVIS_PULL_REQUEST_SLUG} | cut -d/ -f2`
-ref_name=${TRAVIS_PULL_REQUEST_BRANCH}
-
-base_ref_hash=$(echo ${TRAVIS_COMMIT_RANGE} | sed -E 's/\.\.\..+//')
+base_ref_hash=${JOB_PR_BASE_SHA}
 head_results_path="/tmp/base-results.json"
 missing_head=0
 
@@ -42,9 +36,9 @@ echo -n "Differences count (+/-): ${difference_count}"
 
 echo Uploading...
 
-${HERE}/tools/queries-diff --rev ${TRAVIS_PULL_REQUEST_SHA} <<EOF
+${HERE}/tools/queries-diff --rev "${JOB_COMMIT_SHA}" <<EOF
 
-Here is the report for ${TRAVIS_PULL_REQUEST_SHA} (${TRAVIS_PULL_REQUEST_SLUG} @ ${TRAVIS_PULL_REQUEST_BRANCH})
+Here is the report for ${JOB_COMMIT_SHA} (${TRAVIS_PULL_REQUEST_SLUG} @ ${TRAVIS_PULL_REQUEST_BRANCH})
 $([[ ${missing_head} -eq 1 ]] && echo "Missing base report (${base_ref_hash}). The results couldn't be compared." || echo "Base comparison is ${base_ref_hash}.")
 
 
