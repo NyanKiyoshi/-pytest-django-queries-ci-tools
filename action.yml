@@ -1,0 +1,52 @@
+name: "Pytest-Django-Queries Reporter"
+description: 'GitHub Action that uploads pytest-django-queries reports from your repository to the given upstream'
+author: 'Mikail Kocak <@NyanKiyoshi>'
+
+branding:
+  icon: 'activity'
+  color: 'yellow'
+
+inputs:
+  query_raw_dump_path:
+    description: 'The path where the raw query results are located, e.g. /tmp/pytest-dump.json'
+    required: false
+
+  diff_endpoint:
+    description: 'The endpoint to invoke to upload the diffs found; for pull_request events only'
+    required: false
+
+  diff_results_base_url:
+    description: 'The endpoint to query from in order to get old raw dumps (no trailing slashes allowed); for pull_request events only'
+    required: false
+
+  upload_endpoint:
+    description: 'The endpoint to invoke to upload a raw dump; for push events only'
+    required: false
+
+  upload_secret_key:
+    description: 'The secret key to upload a raw dump; for push events only'
+    required: false
+
+runs:
+  using: 'composite'
+  steps:
+    - name: Install
+      shell: bash
+      run: |
+        curl -fL \
+          -o ./action \
+          https://github.com/NyanKiyoshi/pytest-django-queries-bot/releases/download/v1.2.0a1/action-handler_amd64_linux
+        echo 'bb0fba96822bdd2cfd6578f7f25cf4263cfbcf2550dfeac8944de448eb24e466 ./action' | sha256sum -c
+        chmod +x ./action
+
+    - name: Run
+      shell: bash
+      env:
+        QUERIES_UPLOAD_ENDPOINT_URL: ${{ inputs.query_raw_dump_path }}
+        QUERIES_UPLOAD_SECRET: ${{ inputs.upload_secret_key }}
+        QUERIES_RESULTS_PATH: ${{ inputs.query_raw_dump_path }}
+
+        DIFF_ENDPOINT: ${{ inputs.diff_endpoint }}
+        DIFF_RESULTS_BASE_URL: ${{ inputs.diff_results_base_url }}
+      run: |
+        ./action
