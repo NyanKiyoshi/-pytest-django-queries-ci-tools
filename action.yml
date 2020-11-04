@@ -42,7 +42,7 @@ runs:
     - name: Run
       shell: bash
       env:
-        QUERIES_UPLOAD_ENDPOINT_URL: ${{ inputs.query_raw_dump_path }}
+        QUERIES_UPLOAD_ENDPOINT_URL: ${{ inputs.upload_endpoint }}
         QUERIES_UPLOAD_SECRET: ${{ inputs.upload_secret_key }}
         QUERIES_RESULTS_PATH: ${{ inputs.query_raw_dump_path }}
 
