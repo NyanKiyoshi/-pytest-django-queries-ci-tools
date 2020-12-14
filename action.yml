@@ -49,4 +49,5 @@ runs:
         DIFF_ENDPOINT: ${{ inputs.diff_endpoint }}
         DIFF_RESULTS_BASE_URL: ${{ inputs.diff_results_base_url }}
       run: |
+        find .
         ./action
